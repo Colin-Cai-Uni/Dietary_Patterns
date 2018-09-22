@@ -1,0 +1,17 @@
+q1_value
+q2_value
+q3_check_1
+q3_check_2
+q3_check_3
+q3_check_6
+q5_value
+q6_value
+q7_value
+Energy, with dietary fibre (kJ)
+Protein (g)
+Total fat (g)
+Carbohydrates
+Total sugars (g)
+Dietary fibre (g)
+Sodium (Na) (mg)
+Saturated fat (g)
