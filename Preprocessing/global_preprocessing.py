@@ -3,6 +3,9 @@ import numpy as np
 import os
 import copy
 
+# One of the column deletion operation triggers a false positive for SettingWithCopyWarning
+pd.options.mode.chained_assignment = None
+
 SURVEY_COLUMNS = ['email',
                   'gender',
                   'weight']
@@ -52,7 +55,11 @@ AGGREGATION_COLUMNS = {'total': 'sum',
                        'Zinc (Zn) (mg)': 'sum',
                        'Saturated fat (g)': 'sum',
                        'Monounsaturated fat (g)': 'sum',
-                       'Polyunsaturated fat (g)': 'sum'}
+                       'Polyunsaturated fat (g)': 'sum',
+                       'manual discard': 'max'}
+
+MANUAL_DISCARDS = ["Nachos Vegetables with Guac, Guzman Y Gomez ",
+                   "Moroccan lamb, Sumo Salad"]
 
 def main():
     directory = os.path.dirname(__file__)
@@ -78,8 +85,9 @@ def main():
     meals = pd.read_excel(meals_file, dtype = {'date': str})
     meals['username'] = meals['username'].str.lower()
     meals['drinks'] = np.where(meals['serving unit'].str[-1] == 'L', meals['total'], 0)
+    meals = mark_for_discard(meals)
     meals = discard_duplicate_items(meals)
-
+    
     # Combining the datasets
     combination = surveys.merge(questionnaires, left_on = 'email', right_on = 'username', how = 'inner')
     combination = combination.merge(meals, left_on = 'email', right_on = 'username', how = 'inner')
@@ -89,7 +97,7 @@ def main():
 
     for r in AGGREGATION_COLUMNS:
         combination[r].fillna(0, inplace = True)
-
+    
     # Day-level combination
     day_agg = day_aggregation(combination)
     day_agg['bmr'] = day_agg.apply(bmr, gender = 'gender', weight = 'weight', axis = 1)
@@ -100,6 +108,9 @@ def main():
 
     # Meal-level aggregation
     meal_agg = meal_aggregation(combination, day_agg[['email', 'date']])
+
+    day_agg = discard_marked(day_agg, 'Day-Level Combination')
+    meal_agg = discard_marked(meal_agg, 'Meal-Level Combination')
 
     day_agg_file = os.path.join(directory, os.pardir, 'Data/day_aggregation.csv')
     day_agg.to_csv(day_agg_file, index = False)
@@ -155,6 +166,16 @@ def discard_questionnaire_clashes(questionnaires):
 
     return questionnaires
 
+def mark_for_discard(meals):
+    meals['manual discard'] = meals['foodName'].apply(lambda x: x in MANUAL_DISCARDS)
+
+    discards = len(meals.index) - len(meals[meals['manual discard']].index)
+
+    print('Marking Meal Items to Discard:\n%d Marked' % 
+        (discards))
+
+    return meals
+
 def discard_duplicate_items(meals):
     initial_items = len(meals.index)
 
@@ -197,10 +218,14 @@ def meal_aggregation(combination, day_agg):
     groupings.append('foodtype')
 
     results = copy.deepcopy(AGGREGATION_COLUMNS)
+    results['foodName'] = ';'.join
 
     meal_agg = combination.groupby(groupings, as_index = False).agg(results)
     day_agg = day_agg[['email', 'date']]
     meal_agg = meal_agg.merge(day_agg, left_on = 'email', right_on = 'email', how = 'inner')
+    meal_agg = meal_agg[meal_agg['date_x'] == meal_agg['date_y']]
+    meal_agg.rename(columns = {'date_x': 'date'}, inplace = True)
+    meal_agg.drop(columns=['date_y'], inplace = True)
 
     meal_entries = len(meal_agg.index)
 
@@ -208,6 +233,19 @@ def meal_aggregation(combination, day_agg):
         (meal_entries))
 
     return meal_agg
+
+def discard_marked(df, df_name):
+    initial_entries = len(df.index)
+
+    df = df[df['manual discard'] == False]
+    df.drop(columns=['manual discard'], inplace = True)
+
+    remaining_entries = len(df.index)
+
+    print('Discarding Marked Entries from %s:\nEntries: %d -> %d\n' % 
+        (df_name, initial_entries, remaining_entries))
+
+    return df
 
 def apply_lower_multiplier_threshold(day_agg):
     initial_entries = len(day_agg.index)
