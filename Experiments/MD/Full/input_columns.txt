@@ -1,0 +1,9 @@
+Energy Contribution of Proteins
+Energy Contribution of Carbohydrates
+Energy Contribution of Sugars
+Energy Contribution of Added Sugars
+Energy Contribution of Dietary Fibres
+Energy Contribution of Fats
+Energy Contribution of Saturated Fats
+Energy Contribution of Monounsaturated Fats
+Energy Contribution of Polyunsaturated Fats

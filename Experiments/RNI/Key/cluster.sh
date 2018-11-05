@@ -1,0 +1,2 @@
+#!/bin/bash
+python3 ../../cluster_analysis.py RNI/day_aggregation.csv RNI/Key/input_columns.txt -scaler robust kmeans 2 -pca 5 -loadings RNI/Key/pca_loadings.csv -export cluster RNI/Key/pca_clusters.csv

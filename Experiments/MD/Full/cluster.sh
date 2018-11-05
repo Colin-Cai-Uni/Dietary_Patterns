@@ -1,0 +1,2 @@
+#!/bin/bash
+python3 ../../cluster_analysis.py MD/day_aggregation.csv MD/Full/input_columns.txt -scaler robust kmeans 2 -pca 7 -loadings MD/Full/pca_loadings.csv -export cluster MD/Full/pca_clusters.csv

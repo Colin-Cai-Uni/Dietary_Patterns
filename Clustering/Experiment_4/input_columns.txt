@@ -1,9 +1,0 @@
-Energy, with dietary fibre (kJ)
-Protein (g)
-Total fat (g)
-Carbohydrates
-Total sugars (g)
-Dietary fibre (g)
-Sodium (Na) (mg)
-Saturated fat (g)
-bmr multiplier

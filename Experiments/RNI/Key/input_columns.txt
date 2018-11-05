@@ -1,0 +1,7 @@
+Protein (g)
+Total fat (g)
+Carbohydrates
+Total sugars (g)
+Dietary fibre (g)
+Sodium (Na) (g)
+Saturated fat (g)
