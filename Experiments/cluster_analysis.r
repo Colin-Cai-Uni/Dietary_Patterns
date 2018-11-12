@@ -5,6 +5,28 @@ library(ggplot2)
 library(readr)
 library(Rtsne)
 
+# The script used to conduct all the k-medoids clustering experiments.
+# 
+# Parameters
+# ----------
+# inputfile : file location
+#     Location of the clustering input data. The input file should be 
+#     in csv format.
+# columns : file location
+#     Location of a file listing the columns to use as input features, 
+#     with each column on a new line.
+# k : integer
+#     The number of clusters to assign.
+# silhouette : flag
+#     If this flag is present, the script will display the mean silhouette 
+#     coefficient of the clustering results.
+# export : file location
+#     The path to where the newly clustered data file should be saved.
+# 
+# Acknowledgements
+# ----------------
+# Code from was taken from the R-bloggers tutorial "Clustering Mixed Data Types in R"
+# https://www.r-bloggers.com/clustering-mixed-data-types-in-r/
 parser <- ArgumentParser()
     parser$add_argument('inputfile', help = 'Input file')
     parser$add_argument('columns', help = 'Input columns')

@@ -6,7 +6,23 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
+
+'''
+Notes
+-----
+This module contains all of the functions used by cluster_analysis.py,
+'''
 class ClusterKit:
+    '''
+    Creates a new cluster kit instance to contain a dataset.
+
+    Parameters
+    ----------
+    data : dataframe
+        The dataframe containing all the data,
+    columns : list
+        A list of the names of the columns that are to be used as input features.
+    '''
     def __init__(self, data, columns):
         self.rawdata = data
         self.columns = columns
@@ -14,15 +30,43 @@ class ClusterKit:
         self.labels = None
         self.loadings = None
 
+    '''
+    Applies a scaling function to the dataset,
+
+    Parameters
+    ----------
+    function : object
+        An sklearn scaling function.
+    '''
     def scale(self, function):
         scaler = function()
         self.datapoints = scaler.fit_transform(self.datapoints)
 
+    '''
+    Applies k-means++ to the dataset.
+
+    Parameters
+    ----------
+    n : integer
+        The number of clusters to create.
+    '''
     def kmeans(self, n):
         kmeans = KMeans(n_clusters = n, random_state = 0, n_init = 10, init = 'k-means++')
         self.labels = kmeans.fit_predict(self.datapoints)
 
-    # Code from http://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_silhouette_analysis.html#sphx-glr-auto-examples-cluster-plot-kmeans-silhouette-analysis-py
+    '''
+    Displays a silhouette diagram for the current clustering.
+
+    Parameters
+    ----------
+    n : integer
+        The number of clusters.
+
+    Acknowledgements
+    ----------------
+    Code from was taken from the sklearn example "Selecting the number of clusters with silhouette analysis on KMeans clustering"
+    http://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_silhouette_analysis.html#sphx-glr-auto-examples-cluster-plot-kmeans-silhouette-analysis-py
+    '''
     def silhouette(self, n):
         silhouette_plot = plt.subplot(111)
         silhouette_plot.set_xlim([-0.1, 1])
@@ -71,11 +115,30 @@ class ClusterKit:
 
         plt.show()
 
+    '''
+    Retrieves the dataset with an additional column storing the cluster 
+    assignment of each label.
+
+    Parameters
+    ----------
+    label : string
+        The name of the column to store the cluster assignments under.
+    '''
     def export(self, label):
         result = pd.DataFrame(self.datapoints)
         result[label] = self.labels
         return result
 
+    '''
+    Prints the number of percentage of total variance that can be explained 
+    by n PCA components, going from 1 to the total number of features.
+
+    Parameters
+    ----------
+    threshold : float
+        The printing threshold. Only values for n where the percentage of 
+        explained variance exceeds this threshold are printed.
+    '''
     def investigate_pca(self, threshold = 0):
         pca = PCA()
 
@@ -91,6 +154,14 @@ class ClusterKit:
             if total >= threshold:
                 print('%s: %s' % (i, total))
 
+    '''
+    Applies PCA to the dataset.
+
+    Parameters
+    ----------
+    n : integer
+        The number of PCA components to use.
+    '''
     def pca(self, n):
         pca = PCA(n_components = n)
         self.datapoints = pca.fit_transform(self.datapoints)

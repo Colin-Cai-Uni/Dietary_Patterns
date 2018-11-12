@@ -5,12 +5,61 @@ from sklearn import preprocessing
 import argparse
 import os
 
+'''
+The script used to conduct all the k-means++ clustering experiments.
+
+General Parameters
+------------------
+inputfile : file location
+    Location of the clustering input data. The input file should be 
+    in csv format.
+columns : file location
+    Location of a file listing the columns to use as input features, 
+    with each column on a new line.
+scaler : string
+    Choice of scaling algorithm. Valid choices are:
+        'minax': Min-max normalization (the default)
+        'standard': Standardization
+        'robust' Sklearn's robust scaling
+        'none' No scaling
+command: string
+    Choice of command. Valid choices are:
+        'pca': Investigate the effects of component selection on PCA results.
+        'silhouette': Produce a silhouette diagram of a dataset given labels.
+        'kmeans' Apply k-means++ to cluster the dataset.
+
+PCA Parameters
+--------------
+threshold : float
+    The printing threshold. Only values for n where the percentage of 
+    explained variance exceeds this threshold are printed.
+
+Silhouette Parameters
+---------------------
+k : integer
+    The number of clusters.
+incol : string
+    The name of the column that stores the cluster labels in the 
+    data file.
+
+kmeans Parameters
+-----------------
+k : integer
+    The number of clusters to assign.
+pca : integer
+    The number of PCA components to use.
+loadings : file location
+    The path to where the PCA loadings should be saved. Does nothing 
+    if PCA is not used.
+silhouette : flag
+    If this flag is present, the script will display the silhouette 
+    diagram of the clustering results.
+export : file location
+    The path to where the newly clustered data file should be saved.
+'''
+
 def pca(args, ck, directory):
     ck.investigate_pca(args.threshold)
-
-def elbow(args, ck, directory):
-    preclustering(args, ck)
-    ck.elbow(args.n)
 
 def silhouette(args, ck, directory):
     preclustering(args, ck)
@@ -55,10 +104,6 @@ def main():
     cluster_parser.add_argument('-pca', help = 'Apply PCA with n components', type = int)
     cluster_parser.add_argument('-loadings', help = 'Export the PCA component loadings')
     cluster_parser.add_argument('-export', nargs = 2, help = 'Export the processed dataset with labels')
-
-    elbow_parser = sp.add_parser('elbow', help = 'View elbow plot', parents = [cluster_parser])
-    elbow_parser.add_argument('n', help = 'Maximum number of clusters to consider', type = int)
-    elbow_parser.set_defaults(func = elbow)
 
     silhouette_parser = sp.add_parser('silhouette', help = 'View silhouette for a cluster assignment', parents = [cluster_parser])
     silhouette_parser.add_argument('k', help = 'Number of clusters assigned', type = int)

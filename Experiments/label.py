@@ -2,6 +2,24 @@ import pandas as pd
 import argparse
 import os
 
+'''
+A simple script to append the cluster labels from one csv file to another.
+
+Parameters
+----------
+datafile : file location
+    Location of the file to apply the labels to.
+labelfile : file location
+    Location of the file to extract the labels to.
+incol : string
+    The name of the column that stores the cluster labels in the 
+    label file.
+outpuftfolder : file location
+    The path to where the newly labeled data file should be saved.
+outcol : string
+    The name of the column that will encode the cluster labels in the 
+    newly labeled data file.
+'''
 def main():
     directory = os.path.dirname(__file__)
 
