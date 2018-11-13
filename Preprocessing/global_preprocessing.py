@@ -78,7 +78,7 @@ def main():
     SURVEY_COLUMNS.append('bmi')
 
     # Processing the questionnaires dataset
-    questionnaires_file = os.path.join(directory, os.pardir, 'Data/questionnaires_reduced.csv')
+    questionnaires_file = os.path.join(directory, os.pardir, 'Data/questionnaires.csv')
     questionnaires = pd.read_csv(questionnaires_file, usecols = QUESTIONNAIRE_COLUMNS)
     questionnaires = questionnaires.drop_duplicates()
     questionnaires['username'] = questionnaires['username'].str.lower()
